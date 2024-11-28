@@ -28,7 +28,7 @@ class Account extends Model
         if (!$this->isLogged()) {
             return false;
         }
-        return $_SESSION['account']['user_type'] == 'admin';
+        return $_SESSION['account']['is_admin'] == 1;
     }
 
 
@@ -43,7 +43,7 @@ class Account extends Model
     public function login(string $email, string $password): string
     {
 
-        $stmt = $this->db->prepare('SELECT * FROM customers WHERE email = :email');
+        $stmt = $this->db->prepare('SELECT employees.*, positions.is_admin FROM employees JOIN positions ON employees.id_position = positions.id WHERE email = :email');
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
 
@@ -54,34 +54,6 @@ class Account extends Model
         $_SESSION['account'] = $user;
 
         header('Location: /');
-        return '';
-    }
-
-    public function register(string $name, string $surname, string $email, string $password, string $password2): string
-    {
-        if ($password != $password2) {
-            return 'Hesla se neshodují';
-        }
-
-        $stmt = $this->db->prepare('SELECT * FROM customers WHERE email = :email');
-        $stmt->execute(['email' => $email]);
-        $user = $stmt->fetch();
-
-        if ($user) {
-            return 'Uživatel s tímto emailem již existuje';
-        }
-
-        $stmt = $this->db->prepare('INSERT INTO customers (name, surname, email, password, qr_code) VALUES (:name, :surname, :email, :password, :qr_code)');
-        $stmt->execute([
-            'name' => $name,
-            'surname' => $surname,
-            'email' => $email,
-            'password' => password_hash($password, PASSWORD_DEFAULT),
-            'qr_code' => '',
-        ]);
-
-        $this->login($email, $password);
-
         return '';
     }
 }

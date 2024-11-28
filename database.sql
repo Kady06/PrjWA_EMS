@@ -25,7 +25,8 @@ CREATE TABLE departments (
 
 CREATE TABLE positions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE history_logs (
