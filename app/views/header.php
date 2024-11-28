@@ -19,8 +19,18 @@
                         <?php if (!isset($is_admin) || !$is_admin): ?>
                         <?php else: ?>
                             <li class="nav-item">
-                                <a class="nav-link" href="/home/admin">
+                                <a class="nav-link" href="/home/employees">
                                     <button type="button" class="btn btn-warning">Správa účtů</button>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/home/positions">
+                                    <button type="button" class="btn btn-info">Pracovní pozice</button>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/home/departments">
+                                    <button type="button" class="btn btn-info">Oddělení</button>
                                 </a>
                             </li>
                         <?php endif; ?>
