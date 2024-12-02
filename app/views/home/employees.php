@@ -59,7 +59,7 @@
                             
                             <!-- Smazat zaměstnance -->
                             <form action="" method="POST" style="display:inline;">
-                                <input type="hidden" name="id" value="<?= $employee['id'] ?>">
+                                <input type="hidden" name="deleteEmployeeId" value="<?= $employee['id'] ?>">
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     <i class="fa fa-trash"></i> Smazat
                                 </button>

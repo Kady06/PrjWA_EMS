@@ -36,7 +36,7 @@ class HomeController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === "POST") {
             if (isset($_POST['editEmployeeId']) && !empty($_POST['editEmployeeId'])) {
                 $data['error'] = $this->homeModel->updateEmployee($_POST);
-            } elseif (isset($_POST['editEmployeeId']) && empty($_POST['editEmployeeId'])) {
+            } elseif ((!isset($_POST['editEmployeeId']) || empty($_POST['editEmployeeId'])) && !isset($_POST['deleteEmployeeId'])) {
                 $data['error'] = $this->homeModel->createEmployee($_POST);
             } else {
                 $data['error'] = $this->homeModel->deleteEmployee($_POST);
@@ -99,4 +99,5 @@ class HomeController extends Controller {
 
         $this->view('home/departments', $data);
     }
+
 }

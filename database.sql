@@ -7,7 +7,7 @@ CREATE TABLE employees (
     name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255),
     id_position INT NOT NULL,
     id_department INT NOT NULL,
     salary DECIMAL(10,2) NOT NULL,
@@ -38,4 +38,14 @@ CREATE TABLE history_logs (
     datetime DATETIME NOT NULL,
     FOREIGN KEY (id_employee_changed) REFERENCES employees(id),
     FOREIGN KEY (id_employee_author) REFERENCES employees(id)
+);
+
+CREATE TABLE password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_employee INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    created_at DATETIME NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_employee) REFERENCES employees(id) ON DELETE CASCADE
 );

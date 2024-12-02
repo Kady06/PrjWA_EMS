@@ -31,6 +31,40 @@ class AccountController extends Controller
         $this->view('account/login', $data);
     }
 
+    public function register($data) {
+        $emailToken = $data[0];
+
+        $data = [
+            'title' => 'EMS | Registrace',
+        ];
+
+        $checkedToken = $this->accountModel->checkRegisterToken($emailToken);
+
+        if ($checkedToken) {
+            $data['csrf_token'] = $this->getCsrfToken();
+            $data['id_employee'] = $checkedToken['id_employee'];
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                if (!$this->checkCsrfToken($_POST['csrf_token'])) {
+                    header('Location: ' . $_SERVER['REQUEST_URI']);
+                }
+                if ($_POST['password'] !== $_POST['password2']) {
+                    $data['error'] = 'Hesla se neshodují';
+                }
+                if (!isset($data['error'])) {
+                    $data['error'] = $this->accountModel->passwordChange($_POST['id_employee'], $_POST['password'], $emailToken);
+                }
+            } else {
+                $this->view('account/passwordChange', $data);
+            }
+        } else {
+            header('Location: /');
+        }
+
+        
+
+        
+    }
+
     public function logout(): void
     {
         $this->accountModel->logout();

@@ -3,10 +3,12 @@
 class Home extends Model
 {
     private $db;
+    private $mailer;
 
     public function __construct()
     {
         $this->db = $this->getDB();
+        $this->mailer = $this->model('Mailer');
     }
 
 
@@ -98,8 +100,23 @@ class Home extends Model
         $stmt->bindParam(':start_date', $data['date']);
         $stmt->execute();
 
-        // TODO: Heslo na email
-        return ['error' => false, 'message' => 'Zaměstnanec byl úspěšně vytvořen.'];
+        $id_employee = $this->db->lastInsertId();
+        $register_token = bin2hex(random_bytes(32));
+        $created_at = date('Y-m-d H:i:s');
+        $expires_at = date('Y-m-d H:i:s', strtotime('+1 day'));
+
+
+        $stmt = $this->db->prepare('INSERT INTO password_resets (id_employee, token, created_at, expires_at, used) VALUES (:id, :token, :created_at, :expires_at, 0)');
+        $stmt->bindParam(':id', $id_employee);
+        $stmt->bindParam(':token', $register_token);
+        $stmt->bindParam(':created_at', $created_at);
+        $stmt->bindParam(':expires_at',  $expires_at);
+        $stmt->execute();
+
+        $this->mailer->sendRegisterEmail($data['email'], $data['name'] . " " . $data['surname'], $register_token);
+
+        
+        return ['error' => false, 'message' => 'Zaměstnanec byl úspěšně vytvořen a E-mail odeslán.'];
     }
 
     public function updateEmployee(array $data): array
@@ -183,11 +200,11 @@ class Home extends Model
 
     public function deleteEmployee(array $data): array
     {
-        if (empty($data['deleteId'])) {
+        if (empty($data['deleteEmployeeId'])) {
             return ['error' => true, 'message' => 'ID zaměstnance je povinné.'];
         }
 
-        $id = $data['deleteId'];
+        $id = $data['deleteEmployeeId'];
 
         $stmt = $this->db->prepare('SELECT * FROM employees WHERE id = :id');
         $stmt->bindParam(':id', $id);
@@ -196,7 +213,7 @@ class Home extends Model
             return ['error' => true, 'message' => 'Zaměstnanec neexistuje.'];
         }
 
-        $stmt = $this->db->prepare('UPDATE employees SET deleted = true WHERE id = :id');
+        $stmt = $this->db->prepare('DELETE FROM employees WHERE id = :id');
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
@@ -213,7 +230,7 @@ class Home extends Model
             return ['error' => true, 'message' => 'Název pozice je povinný.'];
         }
 
-        if (!isset($data['admin']) || $data['admin'] !== '1' || $data['admin'] !== '0') {
+        if (!isset($data['admin']) || ($data['admin'] !== '1' && $data['admin'] !== '0')) {
             return ['error' => true, 'message' => 'Je to admin? je povinné.'];
         }
 
