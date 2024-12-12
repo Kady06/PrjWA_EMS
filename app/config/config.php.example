@@ -1,0 +1,16 @@
+<?php 
+
+
+// PŘIPOJENÍ K DATABÁZI - LOCALHOST
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'prjwaems');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
+
+define('SMTP_HOST', '');
+define('SMTP_USER', '');
+define('SMTP_PASS', ');
+define('SMTP_PORT', );
+
+define('URL', 'https://ems.spse.jankarlik.cz');
