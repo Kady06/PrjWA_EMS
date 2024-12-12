@@ -11,12 +11,13 @@
 
 
                     <?php else: ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/home">
-                                <button type="button" class="btn btn-primary">Můj účet</button>
-                            </a>
-                        </li>
+
                         <?php if (!isset($is_admin) || !$is_admin): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/home/employees">
+                                    <button type="button" class="btn btn-warning">Zaměstnanci</button>
+                                </a>
+                            </li>
                         <?php else: ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="/home/employees">

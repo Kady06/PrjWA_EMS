@@ -23,31 +23,38 @@ class HomeController extends Controller {
         $this->view('home/index', $data);
     }
 
-    public function employees(): void {
-        if (!$this->accountModel->isLogged() || !$this->accountModel->isAdmin()) {
+    public function employees($data): void {
+        if (!$this->accountModel->isLogged()) {
             header('Location: /account/login');
         }
+        $sort = isset($data[0]) ? $data[0] : 'id';
         $data = [
             'title' => 'EMS | Správa účtů',
             'is_logged' => $this->accountModel->isLogged(),
-            'is_admin' => $this->accountModel->isAdmin()
+            'is_admin' => $this->accountModel->isAdmin(),
+            'sort' => $sort
         ];
 
-        if ($_SERVER['REQUEST_METHOD'] === "POST") {
-            if (isset($_POST['editEmployeeId']) && !empty($_POST['editEmployeeId'])) {
-                $data['error'] = $this->homeModel->updateEmployee($_POST);
-            } elseif ((!isset($_POST['editEmployeeId']) || empty($_POST['editEmployeeId'])) && !isset($_POST['deleteEmployeeId'])) {
-                $data['error'] = $this->homeModel->createEmployee($_POST);
-            } else {
-                $data['error'] = $this->homeModel->deleteEmployee($_POST);
+        if ($this->accountModel->isAdmin()) {
+            if ($_SERVER['REQUEST_METHOD'] === "POST") {
+                if (isset($_POST['editEmployeeId']) && !empty($_POST['editEmployeeId'])) {
+                    $data['error'] = $this->homeModel->updateEmployee($_POST);
+                } elseif ((!isset($_POST['editEmployeeId']) || empty($_POST['editEmployeeId'])) && !isset($_POST['deleteEmployeeId'])) {
+                    $data['error'] = $this->homeModel->createEmployee($_POST);
+                } else {
+                    $data['error'] = $this->homeModel->deleteEmployee($_POST);
+                }
             }
+    
+            $data['employees'] = $this->homeModel->getEmployees($sort);
+            $data['positions'] = $this->homeModel->getPositions();
+            $data['departments'] = $this->homeModel->getDepartments();
+    
+            $this->view('home/employeesAdmin', $data);
+        } else {
+            $data['employees'] = $this->homeModel->getEmployees($sort);
+            $this->view('home/employees', $data);
         }
-
-        $data['employees'] = $this->homeModel->getEmployees();
-        $data['positions'] = $this->homeModel->getPositions();
-        $data['departments'] = $this->homeModel->getDepartments();
-
-        $this->view('home/employees', $data);
     }
 
     public function positions(): void {

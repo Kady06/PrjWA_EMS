@@ -13,7 +13,7 @@ class AccountController extends Controller
     public function login(): void
     {
         if ($this->accountModel->isLogged()) {
-            header('Location: /');
+            header('Location: /home/employees');
         }
         $data = [
             'title' => 'EMS | Přihlášení',

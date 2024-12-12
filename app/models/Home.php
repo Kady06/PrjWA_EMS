@@ -12,9 +12,59 @@ class Home extends Model
     }
 
 
-    public function getEmployees(): array
+    public function getEmployees(string $sort): array
     {
-        $stmt = $this->db->prepare('SELECT employees.*, positions.name as position_name, departments.name as department_name FROM employees JOIN positions ON employees.id_position = positions.id JOIN departments ON employees.id_department = departments.id');
+        $sortBy = "";
+        switch ($sort) {
+            case 'id':
+                $sortBy = 'employees.id';
+                break;
+            case 'byNameAsc':
+                $sortBy = 'employees.name';
+                break;
+            case 'byNameDesc':
+                $sortBy = 'employees.name DESC';
+                break;
+            case 'bySurnameAsc':
+                $sortBy = 'employees.surname';
+                break;
+            case 'bySurnameDesc':
+                $sortBy = 'employees.surname DESC';
+                break;
+            case 'byEmailAsc':
+                $sortBy = 'employees.email';
+                break;
+            case 'byEmailDesc':
+                $sortBy = 'employees.email DESC';
+                break;
+            case 'byPositionAsc':
+                $sortBy = 'positions.name';
+                break;
+            case 'byPositionDesc':
+                $sortBy = 'positions.name DESC';
+                break;
+            case 'byDepartmentAsc':
+                $sortBy = 'departments.name';
+                break;
+            case 'byDepartmentDesc':
+                $sortBy = 'departments.name DESC';
+                break;
+            case 'bySalaryAsc':
+                $sortBy = 'employees.salary';
+                break;
+            case 'bySalaryDesc':
+                $sortBy = 'employees.salary DESC';
+                break;
+            default:
+                $sortBy = 'employees.id';
+                break;
+        }
+
+        $stmt = $this->db->prepare(' SELECT employees.*, positions.name as position_name, departments.name as department_name 
+                                            FROM employees 
+                                            JOIN positions ON employees.id_position = positions.id 
+                                            JOIN departments ON employees.id_department = departments.id
+                                            ORDER BY ' . $sortBy);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -115,7 +165,7 @@ class Home extends Model
 
         $this->mailer->sendRegisterEmail($data['email'], $data['name'] . " " . $data['surname'], $register_token);
 
-        
+
         return ['error' => false, 'message' => 'Zaměstnanec byl úspěšně vytvořen a E-mail odeslán.'];
     }
 
